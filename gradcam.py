@@ -11,8 +11,6 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import transforms as T
 
-#from torchsummaryX import summary #comment the line 114, 115
-
 from dataset import My_Dataset
 
 def main():
@@ -27,7 +25,6 @@ def main():
     bs = 1 # batch size
     assert bs == 1
     core_num = 4
-    seed = 21
     ckp = "ckp" # weight_path
     pin_memory = True
 
@@ -37,13 +34,7 @@ def main():
     #let the batch size can be set to large
     #multiprocessing.set_sharing_strategy('file_system')
     """
-    if torch.cuda.is_available():
-        torch.backends.cudnn.deterministic = True
-        torch.backends.cudnn.benchmark = False
-        device = torch.device("cuda")
-    else:
-        device = torch.device("cpu")
-    torch.manual_seed(seed)
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     
     img_sets = dict((set_dir.name, My_Dataset(set_dir, T.ToTensor())) for set_dir in p(data).iterdir() if p(set_dir).is_dir())
     class_names = img_sets["train"].classes
@@ -56,7 +47,6 @@ def main():
     if md_name == "ExquisiteNetV2":
         model = ExquisiteNetV2(class_num, img_sets["train"][0][0].shape[0])
         model.load_state_dict(torch.load(pj(ckp, data, "wt.pth"))['model'])
-    #summary(model, torch.zeros((1,) + img_sets["train"][0][0].shape)) #tr_set[0][0] is img
     model = model.to(device)
     model.eval()
 
