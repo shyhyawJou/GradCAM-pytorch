@@ -11,9 +11,8 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision import transforms as T
 
-from torchsummaryX import summary #comment the line 114, 115
+#from torchsummaryX import summary #comment the line 114, 115
 
-from network import ExquisiteNetV2
 from dataset import My_Dataset
 
 def main():
@@ -57,7 +56,7 @@ def main():
     if md_name == "ExquisiteNetV2":
         model = ExquisiteNetV2(class_num, img_sets["train"][0][0].shape[0])
         model.load_state_dict(torch.load(pj(ckp, data, "wt.pth"))['model'])
-    summary(model, torch.zeros((1,) + img_sets["train"][0][0].shape)) #tr_set[0][0] is img
+    #summary(model, torch.zeros((1,) + img_sets["train"][0][0].shape)) #tr_set[0][0] is img
     model = model.to(device)
     model.eval()
 
