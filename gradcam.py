@@ -45,7 +45,7 @@ def main():
     ds_num = dict((set_dir, len(img_sets[set_dir])) for set_dir in img_sets)
     
     if md_name == "ExquisiteNetV2":
-        model = ExquisiteNetV2(class_num, img_sets["train"][0][0].shape[0])
+        model = ExquisiteNetV2(class_num)
         model.load_state_dict(torch.load(pj(ckp, data, "wt.pth"))['model'])
     model = model.to(device)
     model.eval()
