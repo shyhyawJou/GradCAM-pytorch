@@ -58,6 +58,8 @@ def main():
     for subset in ds:
         print("%s num:"%subset, ds_num[subset])
     
+    print("you are using the {}!!!".format(device))
+    
     time0 = time.time()
     correct = dict(zip(ds.keys(), np.zeros(len(ds))))
     for subset in ds:
