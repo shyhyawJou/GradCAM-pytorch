@@ -10,7 +10,7 @@ the data before feeding them into the model to generate the heatmap.
 # Important 2
 In `gradcam.py`,  
 variable `data` is the root directory of your dada.  
-variable `layer_name` is the output of such layer which you want to use for generating heatmap. using the last layer before global averagepooling or last conv layer is in general.  
+variable `layer_name` is the output of such layer which you want to use for generating heatmap. using the last layer before global averagepooling is default.  
 variable `heatmap_dir` is the directory in which the heatmap will save.
 
 # Important 3
