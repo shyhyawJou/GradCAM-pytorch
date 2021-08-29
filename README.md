@@ -1,3 +1,6 @@
+# Discription
+My code can generate multiple heatmaps once.
+
 # Grad-CAM-pytorch
 Original paper:  
 [Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization](https://pytorch.org/)
@@ -16,4 +19,14 @@ variable `heatmap_dir` is the directory in which the heatmap will save.
 # Important 3
 [ExquisiteNetV2](https://github.com/shyhyawJou/ExquisiteNetV2) is a model designed by me, you can find the code from the link.
 
-if my code has fakes, don't hesitate to correct me. thx
+# Inplement
+step 1:  
+specify the variable `data`, `layer_name`, `heatmap_dir` in `gradcam.py`.  
+
+step 2:  
+prepare a model. (default is my model "ExquisiteNetV2")  
+
+step 3:
+`python gradcam.py`  
+
+if my code has defects, don't hesitate to contact me.
