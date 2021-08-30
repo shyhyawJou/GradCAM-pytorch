@@ -1,6 +1,3 @@
-# Discription
-My code can generate multiple heatmaps once.
-
 # Grad-CAM-pytorch
 Original paper:  
 [Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization](https://pytorch.org/)
