@@ -13,11 +13,19 @@ from torchvision import transforms as T
 
 from dataset import My_Dataset
 
+# get the last layer before global average pooling layer
+def get_layer_name(model):
+    for n, m in model.named_children():
+        # AdaptiveAvgPool2d or nn.AvgPool2d
+        if isinstance(m, (nn.AdaptiveAvgPool2d, nn.AvgPool2d)):
+            name = tmp
+        tmp = n
+    return name
+
 def main():
     data = 'beans'
     data = 'chijenxi_3c'
     data = 'rattle'
-    layer_name = "features.act"
     md_name = "ExquisiteNetV2"
     #md_name = "mobilenetv3-large"
     #md_name = "ghostnet"
@@ -49,7 +57,8 @@ def main():
         model.load_state_dict(torch.load(pj(ckp, data, "wt.pth"))['model'])
     model = model.to(device)
     model.eval()
-
+    
+    layer_name = get_layer_name(model)
     for name, module in model.named_modules():
         if name == layer_name:
             module.register_forward_hook(model.f_hook)
