@@ -22,6 +22,12 @@ def get_layer_name(model):
         tmp = n
     return name
 
+def f_hook(module, x, y):
+    forward_hook["out"] = y
+
+def b_hook(module, x, y):
+    backward_hook["out"] = y
+
 def main():
     data = 'beans'
     data = 'chijenxi_3c'
@@ -58,11 +64,14 @@ def main():
     model = model.to(device)
     model.eval()
     
+    forward_hook = {"in":0, "out":0}
+    backward_hook = {"in":0, "out":0}
+    
     layer_name = get_layer_name(model)
     for name, module in model.named_modules():
         if name == layer_name:
-            module.register_forward_hook(model.f_hook)
-            module.register_full_backward_hook(model.b_hook)
+            module.register_forward_hook(f_hook)
+            module.register_full_backward_hook(b_hook)
 
     for subset in ds:
         print("%s num:"%subset, ds_num[subset])
@@ -85,9 +94,9 @@ def main():
             #outputs shape = 1x2
             outputs.squeeze_()[pred_label.item()].backward()
             with torch.set_grad_enabled(False):        
-                feature_maps = model.forward_hook["output"]
+                feature_maps = forward_hook["output"]
                 # backward hook is a tuple with one item
-                grad_weights = model.backward_hook["output"][0]
+                grad_weights = backward_hook["output"][0]
                 grad_weights = grad_weights.sum((2,3), True) / torch.prod(torch.as_tensor(grad_weights.shape[-2:]))
                 heatmap = (grad_weights * feature_maps).sum(1)
                 heatmap = nn.ReLU()(heatmap)
