@@ -65,29 +65,4 @@ class GradCAM:
     def backward_hook(self, module, x, y):
         self.gradients["input"] = x
         self.gradients["output"] = y
-
-"""
-from torchvision import transforms as T
-a = torch.randn(1,2,requires_grad=True)
-
-device = torch.device("cpu")
-img = Image.open("chijenxi.bmp").convert("RGB")
-img_tensor = T.ToTensor()(img).unsqueeze_(0)
-model = torch.load("md.pth").to(device)
-
-_, overlay = GradCAM(model, device).get_heatmap(img, img_tensor)
-overlay.show()
-"""
-"""
-import network4
-z = torch.randn(1,1,224,224, requires_grad=True)
-model = network4.ExquisiteNetV2(2, 1)
-a = model(z)
-a = a.mean()
-a.backward()
-print(z.grad)
-model.zero_grad()
-for i in model.parameters():
-    print(i.grad)
-    break
-"""
+        
