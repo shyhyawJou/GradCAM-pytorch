@@ -1,3 +1,7 @@
+# Update
+> **[2021/12/03]**  
+> optimize the speed of generating the heatmap
+
 # Usage
 My code is very easy to use
 
