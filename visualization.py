@@ -7,11 +7,13 @@ import cv2 as cv
 from matplotlib import cm
 import numpy as np
 
+
 class GradCAM:
     def __init__(self, model, device):
+        layerName_for_visualization = self.get_layer_name(model)
         for name, layer in model.named_children():
             layer.requires_grad_(False)
-            if name == self.get_layer_name(model):
+            if name == layerName_for_visualization:
                 layer.requires_grad_(True)
                 layer.register_forward_hook(self.forward_hook)
                 layer.register_full_backward_hook(self.backward_hook)
@@ -44,10 +46,14 @@ class GradCAM:
             heatmap = np.uint8(255 * cm.get_cmap("jet")(heatmap.squeeze()))
 
             if not isinstance(img, np.ndarray):
-                img = np.asarray(img) 
+                img = np.asarray(img)
+            img_size = img.shape[:2][::-1] # w, h
 
             overlay = np.uint8(0.6*img + 0.4*heatmap[:,:,:3])
             overlay = Image.fromarray(overlay)
+            if overlay.size != img_size:
+                overlay = overlay.resize(img_size, Image.BILINEAR)
+
         return outputs.detach(), overlay
 
     def get_layer_name(self, model):
@@ -65,4 +71,5 @@ class GradCAM:
     def backward_hook(self, module, x, y):
         self.gradients["input"] = x
         self.gradients["output"] = y
+        
         
