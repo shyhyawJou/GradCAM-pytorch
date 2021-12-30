@@ -10,18 +10,19 @@ import numpy as np
 
 class GradCAM:
     def __init__(self, model, device):
-        layerName_for_visualization = self.get_layer_name(model)
+        layerName = self.get_layer_name(model)
         for name, layer in model.named_children():
-            layer.requires_grad_(False)
-            if name == layerName_for_visualization:
-                layer.requires_grad_(True)
+            if name == layerName:
                 layer.register_forward_hook(self.forward_hook)
                 layer.register_full_backward_hook(self.backward_hook)
                 break
-            
+            else:
+                layer.requires_grad_(False)
+
+        model = model.to(device)
         self.model = model
         self.device = device
-        self.featuremaps = {}
+        self.feature_maps = {}
         self.gradients = {}
 
     def get_heatmap(self, img, img_tensor):
@@ -32,24 +33,24 @@ class GradCAM:
         #outputs shape = 1x2
         outputs[0][pred_label].backward()
         with torch.no_grad():        
-            feature_maps = self.featuremaps["output"]
+            feature_maps = self.feature_maps["output"]
             # "gradients" is a tuple with one item
             grad_weights = self.gradients["output"][0]
             h, w = grad_weights.size()[-2:]
             grad_weights = grad_weights.sum((2,3), True) / (h * w)
-            heatmap = (grad_weights * feature_maps).sum(1)
-            F.relu(heatmap, True)
-            heatmap /= heatmap.max()
-            heatmap = (heatmap * 255).to(dtype=torch.uint8, device="cpu")
-            heatmap = heatmap.numpy().transpose(1,2,0)
-            heatmap = cv.resize(heatmap, img.size[:2], interpolation=4)
-            heatmap = np.uint8(255 * cm.get_cmap("jet")(heatmap.squeeze()))
+            cam = (grad_weights * feature_maps).sum(1)
+            F.relu(cam, True)
+            cam /= cam.max()
+            cam = (cam * 255).to(dtype=torch.uint8, device="cpu")
+            cam = cam.numpy().transpose(1,2,0)
+            cam = cv.resize(cam, img.size[:2], interpolation=4)
+            cam = np.uint8(255 * cm.get_cmap("jet")(cam.squeeze()))
 
             if not isinstance(img, np.ndarray):
                 img = np.asarray(img)
             img_size = img.shape[:2][::-1] # w, h
 
-            overlay = np.uint8(0.6*img + 0.4*heatmap[:,:,:3])
+            overlay = np.uint8(0.6*img + 0.4 * cam[:,:,:3])
             overlay = Image.fromarray(overlay)
             if overlay.size != img_size:
                 overlay = overlay.resize(img_size, Image.BILINEAR)
@@ -65,11 +66,12 @@ class GradCAM:
         return name
 
     def forward_hook(self, module, x, y):
-        self.featuremaps["input"] = x
-        self.featuremaps["output"] = y
+        #self.feature_maps["input"] = x
+        self.feature_maps["output"] = y
 
     def backward_hook(self, module, x, y):
-        self.gradients["input"] = x
+        #self.gradients["input"] = x
         self.gradients["output"] = y
+
         
         
