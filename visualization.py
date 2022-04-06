@@ -9,16 +9,30 @@ import numpy as np
 
 
 class GradCAM:
-    def __init__(self, model, device):
-        layerName = self.get_layer_name(model)
-        for name, layer in model.named_children():
-            if name == layerName:
-                layer.register_forward_hook(self.forward_hook)
-                layer.register_full_backward_hook(self.backward_hook)
-                break
-            else:
-                layer.requires_grad_(False)
+    """
+    #### Args:
+        layer_name: module name (not child name)
+    """
+    def __init__(self, model, device, layer_name=None, close_some_grad=True):
+        if layer_name is None:
+            layer_name = self.get_layer_name(model)
+        
+        if layer_name is None:
+            raise ValueError(
+                "There is no global average pooling layer, plz splecify 'layer_name'"
+            )
+            
+        for n, m in model.named_children():
+            if close_some_grad:
+                m.requires_grad_(False)
 
+            for sub_n, sub_m in m.named_modules():
+                if '.'.join((n, sub_n)) == layer_name:
+                    sub_m.register_forward_hook(self.forward_hook)
+                    sub_m.register_full_backward_hook(self.backward_hook)
+                    m.requires_grad_(True)
+                    break
+        
         model = model.to(device)
         self.model = model
         self.device = device
@@ -30,7 +44,7 @@ class GradCAM:
         img_tensor = img_tensor.to(self.device)
         outputs = self.model(img_tensor)
         _, pred_label = outputs.max(1)
-        #outputs shape = 1x2
+        # outputs shape = 1x2
         outputs[0][pred_label].backward()
         with torch.no_grad():        
             feature_maps = self.feature_maps["output"]
@@ -40,8 +54,8 @@ class GradCAM:
             grad_weights = grad_weights.sum((2,3), True) / (h * w)
             cam = (grad_weights * feature_maps).sum(1)
             F.relu(cam, True)
-            cam /= cam.max()
-            cam = (cam * 255).to(dtype=torch.uint8, device="cpu")
+            cam = cam / cam.max() * 255
+            cam = cam.to(dtype=torch.uint8, device="cpu")
             cam = cam.numpy().transpose(1,2,0)
             cam = cv.resize(cam, img.size[:2], interpolation=4)
             cam = np.uint8(255 * cm.get_cmap("jet")(cam.squeeze()))
@@ -54,16 +68,17 @@ class GradCAM:
             overlay = Image.fromarray(overlay)
             if overlay.size != img_size:
                 overlay = overlay.resize(img_size, Image.BILINEAR)
-
+                    
         return outputs.detach(), overlay
 
     def get_layer_name(self, model):
+        layer_name = None
         for n, m in model.named_children():
-            # AdaptiveAvgPool2d or nn.AvgPool2d
-            if isinstance(m, (nn.AdaptiveAvgPool2d, nn.AvgPool2d)):
-                name = tmp
-            tmp = n
-        return name
+            for sub_n, sub_m in m.named_modules():
+                if isinstance(sub_m, (nn.AdaptiveAvgPool2d, nn.AvgPool2d)):
+                    layer_name = tmp
+                tmp = '.'.join((n, sub_n))
+        return layer_name
 
     def forward_hook(self, module, x, y):
         #self.feature_maps["input"] = x
@@ -71,6 +86,8 @@ class GradCAM:
 
     def backward_hook(self, module, x, y):
         #self.gradients["input"] = x
+        self.gradients["output"] = y
+
         self.gradients["output"] = y
 
         
