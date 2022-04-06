@@ -46,10 +46,10 @@ img_tensor = preprocess(img).unsqueeze_(0).to(device)
 outputs, overlay = gradcam.get_heatmap(img, img_tensor)
 _, pred_label = outputs.max(1)
 pred_class = class_name[pred_label.item()]
-probability = F.softmax(outputs, 1).squeeze()[pred_label]
+conf = F.softmax(outputs, 1).squeeze()[pred_label]
 
 print("Result:", pred_class)
-print("Probability:", probability)
+print("Confidence:", conf)
 overlay.show() # show the heatmap
 ```
 
