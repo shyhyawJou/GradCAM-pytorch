@@ -11,8 +11,11 @@ import numpy as np
 class GradCAM:
     """
     #### Args:
-        layer_name: module name (not child name)
+        layer_name: module name (not child name), if None, 
+                    will use the last layer before average pooling
+                    , default is None
     """
+
     def __init__(self, model, device, layer_name=None, close_some_grad=True):
         if layer_name is None:
             layer_name = self.get_layer_name(model)
