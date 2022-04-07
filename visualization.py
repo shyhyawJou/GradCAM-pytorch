@@ -22,7 +22,7 @@ class GradCAM:
         
         if layer_name is None:
             raise ValueError(
-                "There is no global average pooling layer, plz splecify 'layer_name'"
+                "There is no global average pooling layer, plz specify 'layer_name'"
             )
             
         for n, m in model.named_children():
