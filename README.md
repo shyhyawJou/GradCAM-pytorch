@@ -5,6 +5,10 @@ The implementation of [Grad-CAM](https://arxiv.org/abs/1610.02391) for getting t
 > **[2021/12/03]**  
 > optimize the speed of generating the heatmap
 
+# Example
+![](assets/n01669191_46.JPEG)
+![](assets/heatmap.jpg)
+
 # Usage
 - The example image is generate from mobilenetv2:  
 ```
