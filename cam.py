@@ -7,13 +7,6 @@ import numpy as np
 
 
 
-
-
-
-
-
-
-
 class CAM:
     '''
     Base Class
