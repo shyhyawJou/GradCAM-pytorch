@@ -7,9 +7,14 @@ The implementation of [Grad-CAM](https://arxiv.org/abs/1610.02391) for getting t
 
 # Usage
 - The example image is generate from mobilenetv2:  
-```python show.py -d cpu -img n01669191_46.JPEG -layer features.18.0```
+```
+python show.py -d cpu -img n01669191_46.JPEG -layer features.18.0
+```
 
 - for custom model  
-```python show.py -d cpu -img n01669191_46.JPEG -layer features.18.0 -m {your model path}```
+```
+python show.py -d cpu -img n01669191_46.JPEG -layer {layer name} -m {your model path}
+```
 
 - If you have cuda, you can just replace the "cpu" to "cuda".
+- If you don't specify any layer, my code will use the last layer before global average pooling  to plot heatmap.
