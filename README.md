@@ -19,8 +19,11 @@ python show.py -d cpu -img n01669191_46.JPEG -layer features.18.0
 ```
 python show.py -d cpu -img n01669191_46.JPEG -layer {layer name} -m {your model path}
 ```
-
-- If you have cuda, you can just replace the "cpu" to "cuda".
-- If you don't specify any layer, my code will use the last layer before global average pooling  to plot heatmap.
 - Get predict label  
   Very easy, you can refer to `show.py`.
+  
+# Note
+- Remenber to check whether the image preprocess is the same as yours, if not, you should alert the preprocess in the `show.py` or the result will be wrong.
+- If you have cuda, you can just replace the "cpu" to "cuda".
+- If you don't specify any layer, my code will use the last layer before global average pooling  to plot heatmap.
+
