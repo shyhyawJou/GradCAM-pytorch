@@ -39,7 +39,7 @@ def main():
         model = mobilenet_v2(True).eval()
     else:
         model = torch.load(arg.m).eval()
-    
+    print(model)
     cam_obj = GradCAM(model, arg.d, preprocess, arg.layer)
     
     print('\ndevice:', arg.d)
@@ -52,6 +52,7 @@ def main():
     print('\nPredict label:', output.max(1)[1].item())
     
     Image.fromarray(overlay).show()
+
 
 
 

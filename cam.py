@@ -7,6 +7,13 @@ import numpy as np
 
 
 
+
+
+
+
+
+
+
 class CAM:
     '''
     Base Class
@@ -60,6 +67,12 @@ class CAM:
         else:
             raise ValueError(f'There is no layer named "{self.layer_name}" in the model')
 
+    def check(self, feature):
+        if feature.ndim != 4 or feature.shape[2] * feature.shape[3] == 1:
+            raise ValueError(f'Got invalid shape of feature map: {feature.shape}, '
+                              'please specify another layer to plot heatmap.') 
+                             
+        
 
 class GradCAM(CAM):
     def __init__(self, model, device, preprocess, layer_name=None):
@@ -71,6 +84,7 @@ class GradCAM(CAM):
         tensor = self.prep(img)[None, ...].to(self.device)
         output = self.model(tensor)
         feature = self.feature['output']
+        self.check(feature)
         grad = torch.autograd.grad(output.max(1)[0], feature)[0]
         
         with torch.no_grad():        
