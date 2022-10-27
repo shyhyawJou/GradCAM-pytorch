@@ -81,9 +81,8 @@ class GradCAM(CAM):
         grad = torch.autograd.grad(output.max(1)[0], feature)[0]
         
         with torch.no_grad():        
-            h, w = grad.size()[-2:]
-            grad = grad.sum((2, 3), True) / (h * w)
-            
+            grad = grad.mean((2, 3), True)
+
             cam = (grad * feature).sum(1)
             F.relu(cam, True)
             cam = cam / cam.max() * 255
