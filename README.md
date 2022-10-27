@@ -30,3 +30,8 @@ python show.py -d cpu -img assets/n01669191_46.JPEG -layer {layer name} -m {your
 - If you don't specify any layer, my code will use the last layer before global average pooling  to plot heatmap.
 - Generally, the layer is deeper, the interpretaton is better. Accordingly, using the last layer before last global average layer to plot heatmap would be a nice choice.
 
+# Other inplementation of CAM method
+| Method   | Framework |
+| :-----:  | :--------: |
+| [Eigen-CAM](https://github.com/shyhyawJou/EigenCAM-Pytorch) | Pytorch |
+| [Ablation-CAM](https://github.com/shyhyawJou/Ablation-CAM-Tensorflow) | Tensorflow |
