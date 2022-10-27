@@ -40,6 +40,7 @@ def main():
     else:
         model = torch.load(arg.m).eval()
     print(model)
+    
     cam_obj = GradCAM(model, arg.d, preprocess, arg.layer)
     
     print('\ndevice:', arg.d)
